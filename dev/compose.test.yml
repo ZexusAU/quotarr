@@ -1,0 +1,48 @@
+# Throwaway test stack: Jellyfin + Seerr + Quotarr built from this repo.
+# Run from the repo root:  docker compose -f dev/compose.test.yml up -d --build
+# Secrets go in dev/.env (git-ignored), never in this file:
+#   SEERR_API_KEY=...        (Seerr > Settings > General > API Key)
+#   QUOTARR_PASSWORD=...     (anything, for the Quotarr page)
+# Wipe it all afterwards:  docker compose -f dev/compose.test.yml down -v
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    ports:
+      - "8096:8096"
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-cache:/cache
+      - media:/media
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    ports:
+      - "5055:5055"
+    environment:
+      - TZ=Australia/Melbourne
+    volumes:
+      - seerr-config:/app/config
+
+  quotarr:
+    build: ..
+    ports:
+      - "8484:8484"
+    environment:
+      - SEERR_URL=http://seerr:5055
+      - SEERR_API_KEY=${SEERR_API_KEY:-}
+      - QUOTARR_PASSWORD=${QUOTARR_PASSWORD:-}
+      - POLL_SECONDS=15
+      - TZ=Australia/Melbourne
+    volumes:
+      - quotarr-data:/data
+    depends_on:
+      - seerr
+
+volumes:
+  jellyfin-config:
+  jellyfin-cache:
+  media:
+  seerr-config:
+  quotarr-data:
