@@ -1,0 +1,27 @@
+# Example only. Copy to docker-compose.yml and replace the placeholder values.
+# Put Quotarr on the same Docker network as Seerr so it can reach http://seerr:5055.
+
+services:
+  quotarr:
+    image: ghcr.io/zexusau/quotarr:latest
+    container_name: quotarr
+    restart: unless-stopped
+    environment:
+      SEERR_URL: http://seerr:5055
+      SEERR_API_KEY: replace-with-your-seerr-api-key   # or use SEERR_API_KEY_FILE below
+      QUOTARR_PASSWORD: replace-with-a-long-password
+      POLL_SECONDS: "30"
+      TZ: Australia/Sydney
+      # WEBHOOK_TOKEN: replace-with-a-random-string    # optional, see README
+    # Docker secrets instead of a plain env var:
+    #   SEERR_API_KEY_FILE: /run/secrets/seerr_api_key
+    # secrets:
+    #   - seerr_api_key
+    volumes:
+      - ./quotarr-data:/data
+    ports:
+      - "8484:8484"
+
+# secrets:
+#   seerr_api_key:
+#     file: ./seerr_api_key.txt

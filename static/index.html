@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quotarr</title>
+<style>
+:root {
+  --bg: #f6f7f7; --card: #ffffff; --text: #1d2524; --muted: #5d6967; --line: #dde3e2;
+  --accent: #0f4c45; --accent-text: #ffffff; --warn: #b8431f; --warn-bg: #fdeae4;
+  --ok: #1d6b3f; --ok-bg: #e3f3e9; --bar: #e6ecea; --input: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111615; --card: #1a2120; --text: #e5ecea; --muted: #9aa7a4; --line: #2c3634;
+    --accent: #3fa597; --accent-text: #0b1110; --warn: #ff8a6a; --warn-bg: #3a211a;
+    --ok: #7fd3a0; --ok-bg: #17301f; --bar: #2a3331; --input: #141a19;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { background: var(--card); border-bottom: 1px solid var(--line); padding: 12px 16px;
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+header h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
+header .grow { flex: 1; }
+main { max-width: 1000px; margin: 0 auto; padding: 16px; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  padding: 16px; margin-bottom: 16px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+h3 { font-size: 14px; margin: 0 0 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+button { font: inherit; border-radius: 6px; border: 1px solid var(--line); background: var(--card);
+  color: var(--text); padding: 6px 12px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button:disabled { opacity: .6; cursor: default; }
+input, select { font: inherit; color: var(--text); background: var(--input); border: 1px solid var(--line);
+  border-radius: 6px; padding: 5px 8px; max-width: 100%; }
+input[type=number] { width: 9em; }
+label { display: block; margin-bottom: 8px; }
+label > span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 2px; }
+label.check { display: flex; gap: 8px; align-items: flex-start; }
+label.check input { margin-top: 4px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin: 0; min-width: 0; }
+legend { font-weight: 600; padding: 0 4px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--bar); color: var(--muted); white-space: nowrap; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.accent { background: var(--accent); color: var(--accent-text); }
+.msg { font-size: 13px; min-height: 1.4em; }
+.msg.err { color: var(--warn); }
+.msg.good { color: var(--ok); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.usage { min-width: 120px; }
+.bar { height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; margin-top: 3px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+.bar.full > i { background: var(--warn); }
+.status-line { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; }
+#login { max-width: 360px; margin: 10vh auto; }
+dialog { border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--text);
+  padding: 16px; width: min(560px, calc(100vw - 32px)); }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+.hidden { display: none !important; }
+.reason { word-break: break-word; }
+@media (max-width: 680px) {
+  .grid2 { grid-template-columns: 1fr; }
+  table.stack thead { display: none; }
+  table.stack tr { display: block; border-bottom: 1px solid var(--line); padding: 8px 0; }
+  table.stack td { display: block; border: 0; padding: 3px 0; }
+  table.stack td:empty { display: none; }
+  table.stack td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <section>
+    <h2>Quotarr</h2>
+    <form id="login-form">
+      <label><span>Password</span><input type="password" id="password" autocomplete="current-password" required></label>
+      <div class="row"><button class="primary" type="submit">Log in</button></div>
+      <p class="msg err" id="login-msg"></p>
+    </form>
+  </section>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <h1>Quotarr</h1>
+    <div class="status-line grow" id="status">Loading...</div>
+    <div class="row">
+      <button id="poll-now" type="button">Check now</button>
+      <button id="logout" type="button">Log out</button>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Default limits</h2>
+      <p class="muted small">Requests under the limit are approved automatically. The rest wait in Seerr for an admin.</p>
+      <form id="defaults">
+        <div class="grid2" id="default-limits"></div>
+        <div style="margin-top:12px">
+          <label class="check"><input type="checkbox" name="count_manual_approvals">
+            <div>Count requests an admin approved by hand<div class="muted small">If off, held requests you approve yourself don't use up the user's slots.</div></div></label>
+          <label class="check"><input type="checkbox" name="separate_4k">
+            <div>Count 4K requests separately<div class="muted small">If on, 4K and normal requests each get the full limit.</div></div></label>
+          <label class="check"><input type="checkbox" name="auto_release_held">
+            <div>Auto-approve held requests when a slot frees up<div class="muted small">Off means held requests always wait for you.</div></div></label>
+        </div>
+        <div class="row"><button class="primary" type="submit">Save defaults</button><span class="msg" id="defaults-msg"></span></div>
+      </form>
+    </section>
+
+    <section>
+      <div class="row" style="justify-content:space-between"><h2>Users</h2><button type="button" id="reload-users">Refresh</button></div>
+      <p class="msg" id="users-msg"></p>
+      <table class="stack">
+        <thead><tr><th>User</th><th>Movies</th><th>TV</th><th>Limits</th><th></th></tr></thead>
+        <tbody id="users"></tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="row" style="justify-content:space-between"><h2>Recent activity</h2><button type="button" id="reload-log">Refresh</button></div>
+      <table class="stack">
+        <thead><tr><th>Time</th><th>User</th><th>Title</th><th>Result</th><th>Reason</th></tr></thead>
+        <tbody id="log"></tbody>
+      </table>
+      <p class="muted small" id="log-empty"></p>
+    </section>
+  </main>
+</div>
+
+<dialog id="edit">
+  <form id="edit-form" method="dialog">
+    <h2 id="edit-title">Edit limits</h2>
+    <p class="muted small">Leave a field on "Default" to use the default limit.</p>
+    <div class="grid2" id="edit-limits"></div>
+    <p class="msg" id="edit-msg"></p>
+    <div class="row">
+      <button class="primary" type="submit" value="save">Save</button>
+      <button type="button" id="edit-reset">Use defaults</button>
+      <button type="button" id="edit-cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const MEDIA = { movie: "Movies", tv: "TV" };
+let settings = null, users = [], editing = null;
+
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function api(method, path, body) {
+  const opts = { method, headers: {}, credentials: "same-origin" };
+  if (body !== undefined) { opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+  const res = await fetch(path, opts);
+  let data = null;
+  try { data = await res.json(); } catch (e) { data = null; }
+  if (res.status === 401 && path !== "/api/login") { showLogin(); throw new Error("Please log in."); }
+  if (!res.ok) throw new Error((data && data.error) || ("HTTP " + res.status));
+  return data;
+}
+
+function showLogin() { $("#app").classList.add("hidden"); $("#login").classList.remove("hidden"); $("#password").focus(); }
+function showApp() { $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); }
+
+function setMsg(el, text, kind) { el.textContent = text || ""; el.className = "msg" + (kind ? " " + kind : ""); }
+
+function fmtTime(iso) {
+  if (!iso) return "never";
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+// ---- limit form fields
+function limitFields(prefix, media, values, inheritFrom) {
+  const v = values || {};
+  const inh = !!inheritFrom;
+  const state = v.enabled === undefined && v.unlimited === undefined ? "" :
+    (v.enabled === false ? "off" : (v.unlimited ? "unlimited" : "limited"));
+  const d = inheritFrom || {};
+  const dState = d.enabled === false ? "off" : (d.unlimited ? "unlimited" : "limited");
+  const opt = (val, label, cur) => `<option value="${val}"${cur === val ? " selected" : ""}>${label}</option>`;
+  const stateNames = { limited: "Limited", unlimited: "Unlimited", off: "Off (hold all)" };
+  const modeNames = { rolling: "Rolling (last N days)", calendar_week: "Calendar week (from Monday)" };
+  return `<fieldset data-media="${media}">
+    <legend>${MEDIA[media]}</legend>
+    <label><span>Limit</span><select name="${prefix}${media}.state">
+      ${inh ? opt("", "Default (" + stateNames[dState] + ")", state) : ""}
+      ${opt("limited", stateNames.limited, state || (inh ? "" : "limited"))}
+      ${opt("unlimited", stateNames.unlimited, state)}${opt("off", stateNames.off, state)}
+    </select></label>
+    <label><span>Requests per window</span><input type="number" min="0" max="10000" name="${prefix}${media}.count"
+      value="${v.count ?? ""}" ${inh ? `placeholder="Default: ${esc(d.count)}"` : "required"}></label>
+    <label><span>Window</span><select name="${prefix}${media}.mode">
+      ${inh ? opt("", "Default (" + modeNames[d.mode] + ")", v.mode || "") : ""}
+      ${opt("rolling", modeNames.rolling, v.mode)}${opt("calendar_week", modeNames.calendar_week, v.mode)}
+    </select></label>
+    <label><span>Days (rolling only)</span><input type="number" min="1" max="90" name="${prefix}${media}.window_days"
+      value="${v.window_days ?? ""}" ${inh ? `placeholder="Default: ${esc(d.window_days)}"` : "required"}></label>
+  </fieldset>`;
+}
+
+function readLimit(form, prefix, media, partial) {
+  const get = n => form.elements[prefix + media + "." + n].value;
+  const out = {};
+  const st = get("state");
+  if (st === "off") { out.enabled = false; out.unlimited = false; }
+  else if (st === "unlimited") { out.enabled = true; out.unlimited = true; }
+  else if (st === "limited") { out.enabled = true; out.unlimited = false; }
+  else if (partial) { out.enabled = null; out.unlimited = null; }
+  const c = get("count"), w = get("window_days"), m = get("mode");
+  out.count = c === "" ? null : parseInt(c, 10);
+  out.window_days = w === "" ? null : parseInt(w, 10);
+  out.mode = m === "" ? null : m;
+  return out;
+}
+
+function syncDays(form) {
+  form.querySelectorAll("fieldset[data-media]").forEach(fs => {
+    const mode = fs.querySelector('select[name$=".mode"]');
+    const days = fs.querySelector('input[name$=".window_days"]');
+    const ph = (mode.value === "" && mode.options[0].text.includes("Calendar"));
+    days.disabled = mode.value === "calendar_week" || ph;
+  });
+}
+
+// ---- defaults
+function renderDefaults() {
+  const box = $("#default-limits");
+  box.innerHTML = limitFields("d.", "movie", settings.movie) + limitFields("d.", "tv", settings.tv);
+  const f = $("#defaults");
+  for (const k of ["count_manual_approvals", "separate_4k", "auto_release_held"]) f.elements[k].checked = !!settings[k];
+  syncDays(f);
+}
+
+$("#defaults").addEventListener("change", e => syncDays(e.currentTarget));
+$("#defaults").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.currentTarget, msg = $("#defaults-msg");
+  const body = {};
+  for (const m of ["movie", "tv"]) {
+    const l = readLimit(f, "d.", m, false);
+    if (l.window_days === null) l.window_days = settings[m].window_days;
+    if (l.count === null) { setMsg(msg, MEDIA[m] + ": enter a number of requests.", "err"); return; }
+    body[m] = l;
+  }
+  for (const k of ["count_manual_approvals", "separate_4k", "auto_release_held"]) body[k] = f.elements[k].checked;
+  try {
+    settings = await api("PUT", "/api/settings", body);
+    renderDefaults();
+    setMsg(msg, "Saved.", "good");
+    loadUsers();
+  } catch (err) { setMsg(msg, err.message, "err"); }
+});
+
+// ---- users
+function usageCell(u, key) {
+  if (u.exempt) return "";
+  const x = u.usage[key];
+  if (!x) return "";
+  if (!x.enabled) return '<span class="pill warn">Off</span> <span class="muted small">all held</span>';
+  if (x.unlimited) return '<span class="pill ok">Unlimited</span>';
+  const pct = x.limit > 0 ? Math.min(100, Math.round(100 * x.used / x.limit)) : 100;
+  const full = x.used >= x.limit;
+  return `<div class="usage"><strong>${x.used}/${x.limit}</strong> <span class="muted small">${esc(x.window)}</span>
+    <div class="bar${full ? " full" : ""}"><i style="width:${pct}%"></i></div></div>`;
+}
+
+function renderUsers() {
+  const tb = $("#users");
+  if (!users.length) { tb.innerHTML = '<tr><td colspan="5" class="muted">No users found in Seerr.</td></tr>'; return; }
+  const sep = settings && settings.separate_4k;
+  tb.innerHTML = users.map(u => {
+    const custom = u.overrides && Object.keys(u.overrides).length;
+    const badge = u.exempt ? '<span class="pill accent">Exempt</span>' :
+      (custom ? '<span class="pill">Custom</span>' : '<span class="muted small">Default</span>');
+    const cell = m => usageCell(u, m) + (sep && !u.exempt ? '<div class="small muted" style="margin-top:4px">4K</div>' + usageCell(u, m + "4k") : "");
+    return `<tr>
+      <td data-label="User"><strong>${esc(u.displayName)}</strong>${u.exempt ? '<div class="muted small">' + (u.admin ? "Admin" : "Manages requests") + ": approves their own</div>" : ""}</td>
+      <td data-label="Movies">${cell("movie")}</td>
+      <td data-label="TV">${cell("tv")}</td>
+      <td data-label="Limits">${badge}</td>
+      <td>${u.exempt ? "" : `<button type="button" data-edit="${u.id}">Edit</button>`}</td>
+    </tr>`;
+  }).join("");
+}
+
+async function loadUsers() {
+  const msg = $("#users-msg");
+  setMsg(msg, "Loading users from Seerr...");
+  try {
+    const data = await api("GET", "/api/users");
+    users = data.users; settings = data.settings;
+    renderUsers();
+    setMsg(msg, "");
+  } catch (err) { setMsg(msg, err.message, "err"); }
+}
+
+$("#users").addEventListener("click", e => {
+  const b = e.target.closest("button[data-edit]");
+  if (b) openEdit(parseInt(b.dataset.edit, 10));
+});
+
+function openEdit(id) {
+  editing = users.find(u => u.id === id);
+  if (!editing) return;
+  $("#edit-title").textContent = "Limits for " + editing.displayName;
+  const ov = editing.overrides || {};
+  $("#edit-limits").innerHTML = limitFields("e.", "movie", ov.movie, settings.movie) + limitFields("e.", "tv", ov.tv, settings.tv);
+  syncDays($("#edit-form"));
+  setMsg($("#edit-msg"), "");
+  $("#edit").showModal();
+}
+
+$("#edit-form").addEventListener("change", e => syncDays(e.currentTarget));
+$("#edit-cancel").addEventListener("click", () => $("#edit").close());
+$("#edit-reset").addEventListener("click", async () => {
+  try { await api("DELETE", `/api/users/${editing.id}/limits`); $("#edit").close(); loadUsers(); }
+  catch (err) { setMsg($("#edit-msg"), err.message, "err"); }
+});
+$("#edit-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.currentTarget;
+  const body = { movie: readLimit(f, "e.", "movie", true), tv: readLimit(f, "e.", "tv", true) };
+  try { await api("PUT", `/api/users/${editing.id}/limits`, body); $("#edit").close(); loadUsers(); }
+  catch (err) { setMsg($("#edit-msg"), err.message, "err"); }
+});
+
+// ---- log
+async function loadLog() {
+  try {
+    const data = await api("GET", "/api/log?limit=200");
+    const rows = data.entries;
+    const label = { auto_approved: ["Approved", "ok"], held: ["Held", "warn"], error: ["Error", "warn"] };
+    $("#log").innerHTML = rows.map(r => {
+      const [t, k] = label[r.action] || [r.action, ""];
+      const type = r.media_type ? (r.media_type === "movie" ? "Movie" : "TV") + (r.is4k ? " 4K" : "") : "";
+      return `<tr><td data-label="Time" class="small">${esc(fmtTime(r.time))}</td>
+        <td data-label="User">${esc(r.user_name || "")}</td>
+        <td data-label="Title">${esc(r.title || "")} <span class="muted small">${esc(type)}</span></td>
+        <td data-label="Result"><span class="pill ${k}">${esc(t)}</span></td>
+        <td data-label="Reason" class="small reason">${esc(r.reason || "")}</td></tr>`;
+    }).join("");
+    $("#log-empty").textContent = rows.length ? "" : "Nothing yet. New requests will show here.";
+  } catch (err) { $("#log-empty").textContent = err.message; }
+}
+
+// ---- status
+async function loadStatus() {
+  try {
+    const s = await api("GET", "/api/status");
+    const reach = s.seerr_reachable === null ? '<span class="pill">Connecting</span>' :
+      (s.seerr_reachable ? '<span class="pill ok">Seerr connected</span>' : '<span class="pill warn">Seerr unreachable</span>');
+    $("#status").innerHTML = `${reach}
+      <span>Last check: ${esc(fmtTime(s.last_poll))}</span>
+      <span>Pending in Seerr: ${s.pending ?? "-"}</span>
+      ${s.last_error ? `<span class="pill warn" title="${esc(s.last_error)}">Error</span><span class="small reason">${esc(s.last_error)}</span>` : ""}
+      <span class="muted">v${esc(s.version)}</span>`;
+  } catch (err) { $("#status").textContent = err.message; }
+}
+
+$("#poll-now").addEventListener("click", async e => {
+  e.target.disabled = true;
+  try { await api("POST", "/api/poll", {}); setTimeout(() => { loadStatus(); loadLog(); loadUsers(); }, 1500); }
+  catch (err) { $("#status").textContent = err.message; }
+  finally { setTimeout(() => e.target.disabled = false, 1500); }
+});
+$("#reload-users").addEventListener("click", loadUsers);
+$("#reload-log").addEventListener("click", loadLog);
+$("#logout").addEventListener("click", async () => { try { await api("POST", "/api/logout", {}); } catch (e) {} showLogin(); });
+
+$("#login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#login-msg");
+  setMsg(msg, "", "err");
+  try {
+    await api("POST", "/api/login", { password: $("#password").value });
+    $("#password").value = "";
+    start();
+  } catch (err) { setMsg(msg, err.message, "err"); }
+});
+
+let timer = null;
+async function start() {
+  try { settings = await api("GET", "/api/settings"); } catch (e) { return; }
+  showApp();
+  renderDefaults();
+  loadStatus(); loadUsers(); loadLog();
+  clearInterval(timer);
+  timer = setInterval(() => { if (!document.hidden && !$("#app").classList.contains("hidden")) { loadStatus(); loadLog(); } }, 30000);
+}
+start();
+</script>
+</body>
+</html>

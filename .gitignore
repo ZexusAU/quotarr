@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.db
+*.db-wal
+*.db-shm
+quotarr-data/
+docker-compose.yml
+seerr_api_key.txt
