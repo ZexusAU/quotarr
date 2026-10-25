@@ -81,6 +81,7 @@ QUOTARR_PASSWORD=pick-a-long-password
 | `TZ` | container default (UTC) | Time zone. Used for the calendar-week reset (Monday 00:00 local time). |
 | `WEBHOOK_TOKEN` | (none) | Optional. If set, `/webhook` needs `?token=` with this value. |
 | `LOG_LEVEL` | `INFO` | `DEBUG` for more detail. |
+| `PUID` / `PGID` | `1000` | The user and group Quotarr runs as. On start it makes the `/data` folder owned by them, so a folder Docker created as root still works. Match your other containers if you use different IDs. |
 
 Quotarr never logs the API key or the password.
 

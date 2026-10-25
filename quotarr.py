@@ -1057,7 +1057,9 @@ def main(argv=None):
         Path(cfg.data_dir).mkdir(parents=True, exist_ok=True)
         store = Store(str(Path(cfg.data_dir) / "quotarr.db"))
     except (OSError, sqlite3.Error) as e:
-        log.error("Cannot open the database in DATA_DIR=%s: %s", cfg.data_dir, e)
+        uid = os.getuid() if hasattr(os, "getuid") else "?"
+        log.error("Cannot open the database in DATA_DIR=%s: %s. The folder must be writable by "
+                  "uid %s; set PUID/PGID to match its owner.", cfg.data_dir, e, uid)
         return 2
 
     client = SeerrClient(cfg.seerr_url, cfg.api_key)
