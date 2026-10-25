@@ -3,151 +3,307 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
 <title>Quotarr</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M8 20a8 8 0 0 1 16 0' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M16 20l4-5' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root {
-  --bg: #f6f7f7; --card: #ffffff; --text: #1d2524; --muted: #5d6967; --line: #dde3e2;
-  --accent: #0f4c45; --accent-text: #ffffff; --warn: #b8431f; --warn-bg: #fdeae4;
-  --ok: #1d6b3f; --ok-bg: #e3f3e9; --bar: #e6ecea; --input: #ffffff;
+  --bg: #0b0e1a; --bg-glow: rgba(99, 102, 241, .16);
+  --card: #141829; --card-2: #1a1f35; --line: rgba(255, 255, 255, .07); --line-2: rgba(255, 255, 255, .12);
+  --text: #e8eaf4; --muted: #8e94b3; --faint: #5d6385;
+  --accent: #7c6cf6; --accent-2: #6366f1; --accent-soft: rgba(124, 108, 246, .16); --accent-text: #fff;
+  --ok: #34d399; --ok-soft: rgba(52, 211, 153, .14);
+  --warn: #fbbf24; --warn-soft: rgba(251, 191, 36, .14);
+  --bad: #fb7185; --bad-soft: rgba(251, 113, 133, .14);
+  --bar: rgba(255, 255, 255, .07); --input: #0f1324;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.25);
 }
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --bg: #111615; --card: #1a2120; --text: #e5ecea; --muted: #9aa7a4; --line: #2c3634;
-    --accent: #3fa597; --accent-text: #0b1110; --warn: #ff8a6a; --warn-bg: #3a211a;
-    --ok: #7fd3a0; --ok-bg: #17301f; --bar: #2a3331; --input: #141a19;
+    --bg: #f4f5fb; --bg-glow: rgba(99, 102, 241, .10);
+    --card: #ffffff; --card-2: #f7f7fd; --line: #e6e7f2; --line-2: #d9dbeb;
+    --text: #1b1d2e; --muted: #5f6484; --faint: #9a9eb8;
+    --accent: #6d5ef0; --accent-2: #4f46e5; --accent-soft: rgba(109, 94, 240, .10);
+    --ok: #059669; --ok-soft: rgba(5, 150, 105, .10);
+    --warn: #b45309; --warn-soft: rgba(217, 119, 6, .12);
+    --bad: #e11d48; --bad-soft: rgba(225, 29, 72, .10);
+    --bar: #ebecf5; --input: #ffffff;
+    --shadow: 0 1px 2px rgba(20, 20, 50, .05), 0 6px 20px rgba(20, 20, 50, .05);
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text);
-  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-header { background: var(--card); border-bottom: 1px solid var(--line); padding: 12px 16px;
-  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
-header h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
-header .grow { flex: 1; }
-main { max-width: 1000px; margin: 0 auto; padding: 16px; }
-section { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-  padding: 16px; margin-bottom: 16px; }
-h2 { font-size: 16px; margin: 0 0 12px; }
-h3 { font-size: 14px; margin: 0 0 8px; }
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-button { font: inherit; border-radius: 6px; border: 1px solid var(--line); background: var(--card);
-  color: var(--text); padding: 6px 12px; cursor: pointer; }
-button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-button:disabled { opacity: .6; cursor: default; }
-input, select { font: inherit; color: var(--text); background: var(--input); border: 1px solid var(--line);
-  border-radius: 6px; padding: 5px 8px; max-width: 100%; }
-input[type=number] { width: 9em; }
-label { display: block; margin-bottom: 8px; }
-label > span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 2px; }
-label.check { display: flex; gap: 8px; align-items: flex-start; }
-label.check input { margin-top: 4px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin: 0; min-width: 0; }
-legend { font-weight: 600; padding: 0 4px; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
-  background: var(--bar); color: var(--muted); white-space: nowrap; }
-.pill.ok { background: var(--ok-bg); color: var(--ok); }
-.pill.warn { background: var(--warn-bg); color: var(--warn); }
-.pill.accent { background: var(--accent); color: var(--accent-text); }
-.msg { font-size: 13px; min-height: 1.4em; }
-.msg.err { color: var(--warn); }
-.msg.good { color: var(--ok); }
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
-.usage { min-width: 120px; }
-.bar { height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; margin-top: 3px; }
-.bar > i { display: block; height: 100%; background: var(--accent); }
-.bar.full > i { background: var(--warn); }
-.status-line { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; }
-#login { max-width: 360px; margin: 10vh auto; }
-dialog { border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--text);
-  padding: 16px; width: min(560px, calc(100vw - 32px)); }
-dialog::backdrop { background: rgba(0,0,0,.45); }
+html { background: var(--bg); }
+body {
+  margin: 0; min-height: 100vh; color: var(--text);
+  background: radial-gradient(1100px 500px at 15% -10%, var(--bg-glow), transparent 70%), var(--bg);
+  font: 14.5px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 .hidden { display: none !important; }
-.reason { word-break: break-word; }
-@media (max-width: 680px) {
-  .grid2 { grid-template-columns: 1fr; }
-  table.stack thead { display: none; }
-  table.stack tr { display: block; border-bottom: 1px solid var(--line); padding: 8px 0; }
-  table.stack td { display: block; border: 0; padding: 3px 0; }
-  table.stack td:empty { display: none; }
-  table.stack td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-size: 12px; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+
+/* ---- header */
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.bar-inner { max-width: 1240px; margin: 0 auto; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+.logo {
+  width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 4px 14px rgba(124, 108, 246, .4);
+}
+.logo svg { width: 18px; height: 18px; }
+.status-line { flex: 1; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.actions { display: flex; gap: 8px; }
+
+/* ---- layout */
+main { max-width: 1240px; margin: 0 auto; padding: 22px 20px 48px; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.col { display: grid; gap: 20px; min-width: 0; }
+.side { position: sticky; top: 76px; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px 20px; box-shadow: var(--shadow); min-width: 0;
+}
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+h2 { font-size: 15px; font-weight: 650; margin: 0; letter-spacing: -.005em; }
+.sub { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+
+/* ---- stat tiles */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+.stat .k { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.stat .v { font-size: 24px; font-weight: 700; margin-top: 4px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.stat .v.sm { font-size: 16px; padding-top: 7px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); display: inline-block; }
+.dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.accent { background: var(--accent); } .dot.bad { background: var(--bad); }
+
+/* ---- controls */
+button {
+  font: inherit; font-size: 13px; font-weight: 550; border-radius: 9px; border: 1px solid var(--line-2);
+  background: var(--card-2); color: var(--text); padding: 7px 13px; cursor: pointer;
+  transition: background .15s, border-color .15s, transform .05s;
+}
+button:hover { border-color: var(--accent); }
+button:active { transform: translateY(1px); }
+button.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-text);
+  border-color: transparent; box-shadow: 0 4px 14px rgba(99, 102, 241, .3);
+}
+button.primary:hover { filter: brightness(1.08); }
+button.ghost { background: transparent; }
+button:disabled { opacity: .55; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input, select {
+  font: inherit; font-size: 13.5px; color: var(--text); background: var(--input);
+  border: 1px solid var(--line-2); border-radius: 9px; padding: 7px 10px; width: 100%;
+}
+select {
+  appearance: none; -webkit-appearance: none; padding-right: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238e94b3' stroke-width='2'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center; background-size: 16px;
+}
+input:disabled { opacity: .45; }
+label { display: block; }
+label > span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+.limit-box { border: 1px solid var(--line); background: var(--card-2); border-radius: 12px; padding: 12px; margin: 0; min-width: 0; }
+.limit-box legend { font-weight: 650; font-size: 13px; padding: 0 6px; display: flex; align-items: center; gap: 6px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fields .wide { grid-column: 1 / -1; }
+.limits { display: grid; gap: 12px; }
+
+/* switches */
+.switch { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.switch:first-child { border-top: 0; }
+.switch input {
+  appearance: none; -webkit-appearance: none; flex: none; width: 36px; height: 20px; padding: 0; margin: 1px 0 0;
+  border-radius: 999px; background: var(--bar); border: 1px solid var(--line-2); position: relative; cursor: pointer; transition: background .2s;
+}
+.switch input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--muted); transition: transform .2s, background .2s;
+}
+.switch input:checked { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
+.switch input:checked::after { transform: translateX(16px); background: #fff; }
+.switch b { font-weight: 550; font-size: 13.5px; display: block; }
+.switch em { font-style: normal; color: var(--muted); font-size: 12px; display: block; margin-top: 1px; }
+.form-foot { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+
+/* pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600; background: var(--bar); color: var(--muted); white-space: nowrap;
+}
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.accent { background: var(--accent-soft); color: var(--accent); }
+.msg { font-size: 12.5px; min-height: 1.3em; margin: 0; }
+.msg.err { color: var(--bad); }
+.msg.good { color: var(--ok); }
+
+/* ---- users */
+.users { display: grid; gap: 8px; }
+.user {
+  display: grid; grid-template-columns: minmax(150px, 1.1fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 18px; align-items: center;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card-2);
+}
+.who { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.avatar {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  font-weight: 700; font-size: 13px; color: #fff; text-transform: uppercase;
+}
+.who .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who .meta { margin-top: 1px; }
+.usage .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.usage .top strong { color: var(--text); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.meter { height: 7px; background: var(--bar); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.meter > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width .4s; }
+.meter.full > i { background: linear-gradient(90deg, #f59e0b, var(--warn)); }
+.usage .k4 { margin-top: 8px; }
+.usage .win { font-size: 11.5px; color: var(--faint); margin-top: 4px; }
+.exempt-note { grid-column: 2 / 4; font-size: 12.5px; color: var(--muted); }
+
+/* ---- activity */
+.log { display: grid; }
+.entry { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 2px; border-top: 1px solid var(--line); }
+.entry:first-child { border-top: 0; }
+.icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+.icon svg { width: 17px; height: 17px; }
+.icon.ok { background: var(--ok-soft); color: var(--ok); }
+.icon.warn { background: var(--warn-soft); color: var(--warn); }
+.icon.bad { background: var(--bad-soft); color: var(--bad); }
+.entry .title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry .reason { color: var(--muted); font-size: 12.5px; word-break: break-word; }
+.entry .when { text-align: right; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.empty { text-align: center; color: var(--muted); padding: 22px 0 10px; font-size: 13px; }
+
+/* ---- login */
+#login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+#login .card { width: min(380px, 100%); padding: 28px; }
+#login .brand { justify-content: center; margin-bottom: 6px; font-size: 20px; }
+#login .logo { width: 38px; height: 38px; border-radius: 11px; }
+#login p.sub { text-align: center; margin-bottom: 20px; }
+#login button { width: 100%; margin-top: 14px; padding: 10px; }
+
+/* ---- dialog */
+dialog {
+  border: 1px solid var(--line-2); border-radius: 16px; background: var(--card); color: var(--text);
+  padding: 22px; width: min(780px, calc(100vw - 32px)); box-shadow: 0 30px 80px rgba(0,0,0,.45);
+}
+dialog::backdrop { background: rgba(5, 7, 15, .6); backdrop-filter: blur(3px); }
+dialog .limits { grid-template-columns: 1fr 1fr; margin-top: 14px; }
+.dialog-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.dialog-foot .grow { flex: 1; }
+
+@media (max-width: 1020px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { position: static; }
+}
+@media (max-width: 720px) {
+  .bar-inner, main { padding-left: 16px; padding-right: 16px; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .user { grid-template-columns: 1fr auto; gap: 12px; }
+  .user .who { grid-column: 1; }
+  .user .edit-cell { grid-column: 2; grid-row: 1; }
+  .user .usage, .exempt-note { grid-column: 1 / -1; }
+  dialog .limits { grid-template-columns: 1fr; }
+  .status-line { order: 3; flex-basis: 100%; }
+  .actions { margin-left: auto; }
 }
 </style>
 </head>
 <body>
 
 <div id="login" class="hidden">
-  <section>
-    <h2>Quotarr</h2>
+  <div class="card">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/></svg></div>Quotarr</div>
+    <p class="sub">Request quotas for Seerr</p>
     <form id="login-form">
       <label><span>Password</span><input type="password" id="password" autocomplete="current-password" required></label>
-      <div class="row"><button class="primary" type="submit">Log in</button></div>
-      <p class="msg err" id="login-msg"></p>
+      <button class="primary" type="submit">Log in</button>
+      <p class="msg err" id="login-msg" style="margin-top:10px"></p>
     </form>
-  </section>
+  </div>
 </div>
 
 <div id="app" class="hidden">
   <header>
-    <h1>Quotarr</h1>
-    <div class="status-line grow" id="status">Loading...</div>
-    <div class="row">
-      <button id="poll-now" type="button">Check now</button>
-      <button id="logout" type="button">Log out</button>
+    <div class="bar-inner">
+      <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/></svg></div>Quotarr</div>
+      <div class="status-line" id="status">Loading...</div>
+      <div class="actions">
+        <button id="poll-now" type="button" class="primary">Check now</button>
+        <button id="logout" type="button" class="ghost">Log out</button>
+      </div>
     </div>
   </header>
+
   <main>
-    <section>
-      <h2>Default limits</h2>
-      <p class="muted small">Requests under the limit are approved automatically. The rest wait in Seerr for an admin.</p>
-      <form id="defaults">
-        <div class="grid2" id="default-limits"></div>
-        <div style="margin-top:12px">
-          <label class="check"><input type="checkbox" name="count_manual_approvals">
-            <div>Count requests an admin approved by hand<div class="muted small">If off, held requests you approve yourself don't use up the user's slots.</div></div></label>
-          <label class="check"><input type="checkbox" name="separate_4k">
-            <div>Count 4K requests separately<div class="muted small">If on, 4K and normal requests each get the full limit.</div></div></label>
-          <label class="check"><input type="checkbox" name="auto_release_held">
-            <div>Auto-approve held requests when a slot frees up<div class="muted small">Off means held requests always wait for you.</div></div></label>
+    <div class="layout">
+      <div class="col">
+        <div class="stats">
+          <div class="stat"><div class="k"><span class="dot ok"></span>Approved, 7 days</div><div class="v" id="st-approved">–</div></div>
+          <div class="stat"><div class="k"><span class="dot warn"></span>Held, 7 days</div><div class="v" id="st-held">–</div></div>
+          <div class="stat"><div class="k"><span class="dot accent"></span>Pending in Seerr</div><div class="v" id="st-pending">–</div></div>
+          <div class="stat"><div class="k"><span class="dot" id="st-dot"></span>Last check</div><div class="v sm" id="st-last">–</div></div>
         </div>
-        <div class="row"><button class="primary" type="submit">Save defaults</button><span class="msg" id="defaults-msg"></span></div>
-      </form>
-    </section>
 
-    <section>
-      <div class="row" style="justify-content:space-between"><h2>Users</h2><button type="button" id="reload-users">Refresh</button></div>
-      <p class="msg" id="users-msg"></p>
-      <table class="stack">
-        <thead><tr><th>User</th><th>Movies</th><th>TV</th><th>Limits</th><th></th></tr></thead>
-        <tbody id="users"></tbody>
-      </table>
-    </section>
+        <section class="card">
+          <div class="card-head">
+            <div><h2>Users</h2><p class="sub">Usage in each user's current window</p></div>
+            <button type="button" id="reload-users">Refresh</button>
+          </div>
+          <p class="msg" id="users-msg"></p>
+          <div class="users" id="users"></div>
+        </section>
 
-    <section>
-      <div class="row" style="justify-content:space-between"><h2>Recent activity</h2><button type="button" id="reload-log">Refresh</button></div>
-      <table class="stack">
-        <thead><tr><th>Time</th><th>User</th><th>Title</th><th>Result</th><th>Reason</th></tr></thead>
-        <tbody id="log"></tbody>
-      </table>
-      <p class="muted small" id="log-empty"></p>
-    </section>
+        <section class="card">
+          <div class="card-head">
+            <div><h2>Recent activity</h2><p class="sub">What Quotarr approved or held</p></div>
+            <button type="button" id="reload-log">Refresh</button>
+          </div>
+          <div class="log" id="log"></div>
+          <p class="empty hidden" id="log-empty"></p>
+        </section>
+      </div>
+
+      <aside class="col side">
+        <section class="card">
+          <div class="card-head"><div><h2>Default limits</h2><p class="sub">Under the limit is approved automatically. The rest wait in Seerr for you.</p></div></div>
+          <form id="defaults">
+            <div class="limits" id="default-limits"></div>
+            <div style="margin-top:12px">
+              <label class="switch"><input type="checkbox" name="count_manual_approvals">
+                <div><b>Count requests you approve by hand</b><em>If off, held requests you approve don't use up the user's slots.</em></div></label>
+              <label class="switch"><input type="checkbox" name="separate_4k">
+                <div><b>Count 4K separately</b><em>If on, 4K and normal requests each get the full limit.</em></div></label>
+              <label class="switch"><input type="checkbox" name="auto_release_held">
+                <div><b>Release held requests when a slot frees up</b><em>Off means held requests always wait for you.</em></div></label>
+            </div>
+            <div class="form-foot"><button class="primary" type="submit">Save defaults</button><p class="msg" id="defaults-msg"></p></div>
+          </form>
+        </section>
+      </aside>
+    </div>
   </main>
 </div>
 
 <dialog id="edit">
   <form id="edit-form" method="dialog">
     <h2 id="edit-title">Edit limits</h2>
-    <p class="muted small">Leave a field on "Default" to use the default limit.</p>
-    <div class="grid2" id="edit-limits"></div>
-    <p class="msg" id="edit-msg"></p>
-    <div class="row">
+    <p class="sub">Anything left on "Default" follows the default limits.</p>
+    <div class="limits" id="edit-limits"></div>
+    <p class="msg" id="edit-msg" style="margin-top:10px"></p>
+    <div class="dialog-foot">
       <button class="primary" type="submit" value="save">Save</button>
-      <button type="button" id="edit-reset">Use defaults</button>
       <button type="button" id="edit-cancel">Cancel</button>
+      <span class="grow"></span>
+      <button type="button" id="edit-reset" class="ghost">Reset to defaults</button>
     </div>
   </form>
 </dialog>
@@ -156,6 +312,13 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 "use strict";
 const $ = (s, el = document) => el.querySelector(s);
 const MEDIA = { movie: "Movies", tv: "TV" };
+const ICONS = {
+  movie: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 12h4M17 12h4"/></svg>',
+  tv: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M9 2l3 4 3-4"/></svg>',
+  ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  bad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg>'
+};
 let settings = null, users = [], editing = null;
 
 function esc(v) {
@@ -181,7 +344,26 @@ function setMsg(el, text, kind) { el.textContent = text || ""; el.className = "m
 function fmtTime(iso) {
   if (!iso) return "never";
   const d = new Date(iso);
-  return isNaN(d) ? iso : d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  return isNaN(d) ? iso : d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+}
+
+function ago(iso) {
+  if (!iso) return "never";
+  const s = Math.round((Date.now() - new Date(iso)) / 1000);
+  if (isNaN(s)) return iso;
+  if (s < 45) return "just now";
+  if (s < 3600) return Math.round(s / 60) + " min ago";
+  if (s < 86400) return Math.round(s / 3600) + " h ago";
+  return fmtTime(iso);
+}
+
+function avatar(name) {
+  const n = String(name || "?");
+  let h = 0;
+  for (const c of n) h = (h * 31 + c.charCodeAt(0)) % 360;
+  const parts = n.trim().split(/\s+/);
+  const initials = (parts[0][0] || "?") + (parts.length > 1 ? parts[parts.length - 1][0] : "");
+  return `<div class="avatar" style="background:linear-gradient(135deg,hsl(${h} 65% 58%),hsl(${(h + 40) % 360} 60% 46%))">${esc(initials)}</div>`;
 }
 
 // ---- limit form fields
@@ -194,22 +376,24 @@ function limitFields(prefix, media, values, inheritFrom) {
   const dState = d.enabled === false ? "off" : (d.unlimited ? "unlimited" : "limited");
   const opt = (val, label, cur) => `<option value="${val}"${cur === val ? " selected" : ""}>${label}</option>`;
   const stateNames = { limited: "Limited", unlimited: "Unlimited", off: "Off (hold all)" };
-  const modeNames = { rolling: "Rolling (last N days)", calendar_week: "Calendar week (from Monday)" };
-  return `<fieldset data-media="${media}">
-    <legend>${MEDIA[media]}</legend>
+  const modeNames = { rolling: "Rolling", calendar_week: "Calendar week" };
+  return `<fieldset class="limit-box" data-media="${media}">
+    <legend>${ICONS[media]} ${MEDIA[media]}</legend>
+    <div class="fields">
     <label><span>Limit</span><select name="${prefix}${media}.state">
       ${inh ? opt("", "Default (" + stateNames[dState] + ")", state) : ""}
       ${opt("limited", stateNames.limited, state || (inh ? "" : "limited"))}
       ${opt("unlimited", stateNames.unlimited, state)}${opt("off", stateNames.off, state)}
     </select></label>
-    <label><span>Requests per window</span><input type="number" min="0" max="10000" name="${prefix}${media}.count"
+    <label><span>Requests</span><input type="number" min="0" max="10000" name="${prefix}${media}.count"
       value="${v.count ?? ""}" ${inh ? `placeholder="Default: ${esc(d.count)}"` : "required"}></label>
     <label><span>Window</span><select name="${prefix}${media}.mode">
       ${inh ? opt("", "Default (" + modeNames[d.mode] + ")", v.mode || "") : ""}
       ${opt("rolling", modeNames.rolling, v.mode)}${opt("calendar_week", modeNames.calendar_week, v.mode)}
     </select></label>
-    <label><span>Days (rolling only)</span><input type="number" min="1" max="90" name="${prefix}${media}.window_days"
+    <label><span>Days (rolling)</span><input type="number" min="1" max="90" name="${prefix}${media}.window_days"
       value="${v.window_days ?? ""}" ${inh ? `placeholder="Default: ${esc(d.window_days)}"` : "required"}></label>
+    </div>
   </fieldset>`;
 }
 
@@ -262,45 +446,51 @@ $("#defaults").addEventListener("submit", async e => {
     settings = await api("PUT", "/api/settings", body);
     renderDefaults();
     setMsg(msg, "Saved.", "good");
+    setTimeout(() => setMsg(msg, ""), 2500);
     loadUsers();
   } catch (err) { setMsg(msg, err.message, "err"); }
 });
 
 // ---- users
-function usageCell(u, key) {
-  if (u.exempt) return "";
+function usageBlock(u, key, label) {
   const x = u.usage[key];
   if (!x) return "";
-  if (!x.enabled) return '<span class="pill warn">Off</span> <span class="muted small">all held</span>';
-  if (x.unlimited) return '<span class="pill ok">Unlimited</span>';
-  const pct = x.limit > 0 ? Math.min(100, Math.round(100 * x.used / x.limit)) : 100;
-  const full = x.used >= x.limit;
-  return `<div class="usage"><strong>${x.used}/${x.limit}</strong> <span class="muted small">${esc(x.window)}</span>
-    <div class="bar${full ? " full" : ""}"><i style="width:${pct}%"></i></div></div>`;
+  let body;
+  if (!x.enabled) body = `<div class="top"><span>${label}</span><span class="pill warn">Off: all held</span></div>`;
+  else if (x.unlimited) body = `<div class="top"><span>${label}</span><span class="pill ok">Unlimited</span></div>`;
+  else {
+    const pct = x.limit > 0 ? Math.min(100, Math.round(100 * x.used / x.limit)) : 100;
+    const full = x.used >= x.limit;
+    body = `<div class="top"><span>${label}</span><strong>${x.used}/${x.limit}</strong></div>
+      <div class="meter${full ? " full" : ""}"><i style="width:${pct}%"></i></div>
+      <div class="win">${esc(x.window)}</div>`;
+  }
+  return body;
 }
 
 function renderUsers() {
-  const tb = $("#users");
-  if (!users.length) { tb.innerHTML = '<tr><td colspan="5" class="muted">No users found in Seerr.</td></tr>'; return; }
+  const box = $("#users");
+  if (!users.length) { box.innerHTML = '<p class="empty">No users found in Seerr.</p>'; return; }
   const sep = settings && settings.separate_4k;
-  tb.innerHTML = users.map(u => {
+  const sorted = [...users].sort((a, b) => (a.exempt - b.exempt) || String(a.displayName).localeCompare(b.displayName));
+  box.innerHTML = sorted.map(u => {
     const custom = u.overrides && Object.keys(u.overrides).length;
     const badge = u.exempt ? '<span class="pill accent">Exempt</span>' :
-      (custom ? '<span class="pill">Custom</span>' : '<span class="muted small">Default</span>');
-    const cell = m => usageCell(u, m) + (sep && !u.exempt ? '<div class="small muted" style="margin-top:4px">4K</div>' + usageCell(u, m + "4k") : "");
-    return `<tr>
-      <td data-label="User"><strong>${esc(u.displayName)}</strong>${u.exempt ? '<div class="muted small">' + (u.admin ? "Admin" : "Manages requests") + ": approves their own</div>" : ""}</td>
-      <td data-label="Movies">${cell("movie")}</td>
-      <td data-label="TV">${cell("tv")}</td>
-      <td data-label="Limits">${badge}</td>
-      <td>${u.exempt ? "" : `<button type="button" data-edit="${u.id}">Edit</button>`}</td>
-    </tr>`;
+      (custom ? '<span class="pill accent">Custom limits</span>' : '<span class="pill">Default limits</span>');
+    const who = `<div class="who">${avatar(u.displayName)}<div style="min-width:0">
+      <div class="name">${esc(u.displayName)}</div><div class="meta">${badge}</div></div></div>`;
+    if (u.exempt) {
+      return `<div class="user">${who}<div class="exempt-note">${u.admin ? "Admin" : "Manages requests"}, so approves their own.</div><div></div></div>`;
+    }
+    const cell = m => `<div class="usage">${usageBlock(u, m, MEDIA[m])}${sep ? `<div class="k4">${usageBlock(u, m + "4k", MEDIA[m] + " 4K")}</div>` : ""}</div>`;
+    return `<div class="user">${who}${cell("movie")}${cell("tv")}
+      <div class="edit-cell"><button type="button" data-edit="${u.id}">Edit</button></div></div>`;
   }).join("");
 }
 
 async function loadUsers() {
   const msg = $("#users-msg");
-  setMsg(msg, "Loading users from Seerr...");
+  if (!users.length) setMsg(msg, "Loading users from Seerr...");
   try {
     const data = await api("GET", "/api/users");
     users = data.users; settings = data.settings;
@@ -344,39 +534,55 @@ async function loadLog() {
   try {
     const data = await api("GET", "/api/log?limit=200");
     const rows = data.entries;
-    const label = { auto_approved: ["Approved", "ok"], held: ["Held", "warn"], error: ["Error", "warn"] };
+    const kinds = { auto_approved: ["Approved", "ok"], held: ["Held", "warn"], error: ["Error", "bad"] };
     $("#log").innerHTML = rows.map(r => {
-      const [t, k] = label[r.action] || [r.action, ""];
+      const [t, k] = kinds[r.action] || [r.action, "warn"];
       const type = r.media_type ? (r.media_type === "movie" ? "Movie" : "TV") + (r.is4k ? " 4K" : "") : "";
-      return `<tr><td data-label="Time" class="small">${esc(fmtTime(r.time))}</td>
-        <td data-label="User">${esc(r.user_name || "")}</td>
-        <td data-label="Title">${esc(r.title || "")} <span class="muted small">${esc(type)}</span></td>
-        <td data-label="Result"><span class="pill ${k}">${esc(t)}</span></td>
-        <td data-label="Reason" class="small reason">${esc(r.reason || "")}</td></tr>`;
+      return `<div class="entry">
+        <div class="icon ${k}">${ICONS[k] || ""}</div>
+        <div style="min-width:0">
+          <div class="title">${esc(r.title || "")} <span class="pill ${k}">${esc(t)}</span></div>
+          <div class="reason">${esc(r.user_name || "")}${type ? " · " + esc(type) : ""}${r.reason ? " · " + esc(r.reason) : ""}</div>
+        </div>
+        <div class="when" title="${esc(fmtTime(r.time))}">${esc(ago(r.time))}</div>
+      </div>`;
     }).join("");
-    $("#log-empty").textContent = rows.length ? "" : "Nothing yet. New requests will show here.";
-  } catch (err) { $("#log-empty").textContent = err.message; }
+    const empty = $("#log-empty");
+    empty.textContent = rows.length ? "" : "Nothing yet. New requests will show here.";
+    empty.classList.toggle("hidden", !!rows.length);
+    const weekAgo = Date.now() - 7 * 86400000;
+    const recent = rows.filter(r => new Date(r.time) >= weekAgo);
+    $("#st-approved").textContent = recent.filter(r => r.action === "auto_approved").length;
+    $("#st-held").textContent = recent.filter(r => r.action === "held").length;
+  } catch (err) {
+    const empty = $("#log-empty");
+    empty.textContent = err.message; empty.classList.remove("hidden");
+  }
 }
 
 // ---- status
 async function loadStatus() {
   try {
     const s = await api("GET", "/api/status");
-    const reach = s.seerr_reachable === null ? '<span class="pill">Connecting</span>' :
-      (s.seerr_reachable ? '<span class="pill ok">Seerr connected</span>' : '<span class="pill warn">Seerr unreachable</span>');
+    const reach = s.seerr_reachable === null ? '<span class="pill">Connecting…</span>' :
+      (s.seerr_reachable ? '<span class="pill ok"><span class="dot ok"></span>Seerr connected</span>'
+                         : '<span class="pill bad"><span class="dot bad"></span>Seerr unreachable</span>');
     $("#status").innerHTML = `${reach}
-      <span>Last check: ${esc(fmtTime(s.last_poll))}</span>
-      <span>Pending in Seerr: ${s.pending ?? "-"}</span>
-      ${s.last_error ? `<span class="pill warn" title="${esc(s.last_error)}">Error</span><span class="small reason">${esc(s.last_error)}</span>` : ""}
-      <span class="muted">v${esc(s.version)}</span>`;
+      ${s.last_error ? `<span class="pill bad" title="${esc(s.last_error)}">Error</span><span class="small" style="word-break:break-word">${esc(s.last_error)}</span>` : ""}
+      <span>v${esc(s.version)}</span>`;
+    $("#st-pending").textContent = s.pending ?? "–";
+    $("#st-last").textContent = ago(s.last_poll);
+    $("#st-last").title = fmtTime(s.last_poll);
+    $("#st-dot").className = "dot " + (s.last_error ? "bad" : (s.seerr_reachable ? "ok" : ""));
   } catch (err) { $("#status").textContent = err.message; }
 }
 
 $("#poll-now").addEventListener("click", async e => {
-  e.target.disabled = true;
+  const b = e.currentTarget;
+  b.disabled = true; b.textContent = "Checking…";
   try { await api("POST", "/api/poll", {}); setTimeout(() => { loadStatus(); loadLog(); loadUsers(); }, 1500); }
   catch (err) { $("#status").textContent = err.message; }
-  finally { setTimeout(() => e.target.disabled = false, 1500); }
+  finally { setTimeout(() => { b.disabled = false; b.textContent = "Check now"; }, 1500); }
 });
 $("#reload-users").addEventListener("click", loadUsers);
 $("#reload-log").addEventListener("click", loadLog);

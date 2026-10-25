@@ -32,7 +32,7 @@ from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "0.1.1"
 
 # server/constants/media.ts (MediaRequestStatus)
 PENDING, APPROVED, DECLINED, FAILED, COMPLETED = 1, 2, 3, 4, 5
