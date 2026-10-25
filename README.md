@@ -34,16 +34,17 @@ You also need Seerr's API key: **Settings → General → API Key**.
 
 ## Install (Docker Compose)
 
+1. Add Quotarr to the `docker-compose.yml` that runs Seerr, under `services:`:
+
 ```yaml
-services:
   quotarr:
     image: ghcr.io/zexusau/quotarr:latest
     container_name: quotarr
     restart: unless-stopped
     environment:
       SEERR_URL: http://seerr:5055
-      SEERR_API_KEY: replace-with-your-seerr-api-key
-      QUOTARR_PASSWORD: replace-with-a-long-password
+      SEERR_API_KEY: ${SEERR_API_KEY}
+      QUOTARR_PASSWORD: ${QUOTARR_PASSWORD}
       TZ: Australia/Sydney
     volumes:
       - ./quotarr-data:/data
@@ -51,7 +52,18 @@ services:
       - "8484:8484"
 ```
 
-Put it on the same Docker network as Seerr, run `docker compose up -d`, then open `http://your-server:8484` and log in with `QUOTARR_PASSWORD`.
+   `seerr` in `SEERR_URL` is the name of your Seerr service. Change it if yours is called something else (for example `jellyseerr`). If Seerr is in a different compose file or on its own Docker network, add Quotarr to that network too, or use `http://<server-ip>:5055`.
+
+2. Create a file called `.env` in the **same folder as `docker-compose.yml`** (or add to it if you already have one). Compose reads it automatically and fills in the `${...}` values:
+
+```sh
+SEERR_API_KEY=paste-your-seerr-api-key-here
+QUOTARR_PASSWORD=pick-a-long-password
+```
+
+   This keeps the key and password out of your compose file. Don't commit `.env` to git.
+
+3. Run `docker compose up -d quotarr`, then open `http://your-server:8484` and log in with `QUOTARR_PASSWORD`. Your Seerr users should be listed, with admins marked **exempt**. If it can't reach Seerr, `docker logs quotarr` says why.
 
 `docker-compose.example.yml` also shows how to use a Docker secret for the API key.
 

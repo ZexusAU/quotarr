@@ -1,4 +1,6 @@
-# Example only. Copy to docker-compose.yml and replace the placeholder values.
+# Example only. Put the secrets in a .env file in the same folder as your compose file:
+#   SEERR_API_KEY=...
+#   QUOTARR_PASSWORD=...
 # Put Quotarr on the same Docker network as Seerr so it can reach http://seerr:5055.
 
 services:
@@ -8,8 +10,8 @@ services:
     restart: unless-stopped
     environment:
       SEERR_URL: http://seerr:5055
-      SEERR_API_KEY: replace-with-your-seerr-api-key   # or use SEERR_API_KEY_FILE below
-      QUOTARR_PASSWORD: replace-with-a-long-password
+      SEERR_API_KEY: ${SEERR_API_KEY}   # or use SEERR_API_KEY_FILE below
+      QUOTARR_PASSWORD: ${QUOTARR_PASSWORD}
       POLL_SECONDS: "30"
       TZ: Australia/Sydney
       # WEBHOOK_TOKEN: replace-with-a-random-string    # optional, see README
